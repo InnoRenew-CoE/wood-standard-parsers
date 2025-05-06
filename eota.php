@@ -127,7 +127,7 @@ add_to_csv("https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=
 fclose($etas_file);
 
 $eads_file = fopen("eads.csv", "w");
-fputcsv($eads_file, ["EAD Number", "EAD Title", "OJEU", "Status", "Comment", "url"], ";");
+fputcsv($eads_file, ["url", "EAD Number", "EAD Title", "OJEU", "Status", "Comment"], ";");
 $page = fetch_page("https://www.eota.eu/eads");
 $dom = HTMLDocument::createFromString($page, HTML_NO_DEFAULT_NS);
 $xpath = new XPath($dom);
