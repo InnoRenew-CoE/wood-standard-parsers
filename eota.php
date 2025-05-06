@@ -117,13 +117,13 @@ $etas_file = fopen("etas.csv", "w");
 fputcsv($etas_file, $keys, ";");
 
 // // P13
-// add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=13&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
+add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=13&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
 
 // // P14
-// add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=14&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
+add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=14&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
 
 // // All
-// add_to_csv("https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search=", true);
+add_to_csv("https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search=", true);
 fclose($etas_file);
 
 $eads_file = fopen("eads.csv", "w");
