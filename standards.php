@@ -17,7 +17,6 @@ DATA
         "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
         "Accept: application/json, text/plain, */*",
         "Accept-Language: en-US,en;q=0.5",
-
         "Authorization: IhsggA2s2ppdoWKolIkxzNFCiu09moHub-lvKs8V4pZs49OT4hLhq3ypDctjKrdNyIA5GuBdFl-VCWULXQfkhLLWFlEFg1_bT9lJQGAj6iU",
         "Content-Type: application/json; charset=UTF-8",
         "Origin: https://standards.iteh.ai",
@@ -33,7 +32,7 @@ DATA
     return $output;
 }
 
-for ($i = 1; $i <= 5; $i++) {
+for ($i = 2277; $i <= 2280; $i++) {
     echo json_encode(json_decode(fetch_page($i)), JSON_PRETTY_PRINT);
     echo "\n--------------------- END OF PAGE $i ------------------------\n";
 }
