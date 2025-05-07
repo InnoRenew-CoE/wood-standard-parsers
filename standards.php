@@ -1,5 +1,5 @@
 <?php
-function fetch_page(int $page): string
+function fetch_standards(int $page): string
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://standards.iteh.ai/api/catalog/search");
@@ -8,7 +8,7 @@ function fetch_page(int $page): string
         $ch,
         CURLOPT_POSTFIELDS,
         <<<DATA
-{"errors":[],"availablePageSizes":[10,20,50,100],"page":$page,"pageSize":100,"total":227863,"readonlyFields":[],"statusesFilter":["I","P","W"],"sortBy":1,"bodyId":null,"icsId":null,"directiveId":null,"mandateId":null,"publicationDateRange":{"from":null,"to":null},"withdrawalDateRange":{"from":null,"to":null},"publicEnquiryEndRange":{"from":null,"to":null}}
+{"errors":[],"availablePageSizes":[10,20,50,100],"page":$page,"pageSize":100,"total":227863,"readonlyFields":[],"statusesFilter":["I","P","W"],"sortBy":1,"bodyId":null,"icsId":null,"directiveId":null,"mandateId":null,"publicationDateRange":{"from":null,"to":null},"withdrawalDateRange":{"from":null,"to":null},"publicEnquiryEndRange":{"from":null,"to":null},"organizationId":"14910298-4616-4a08-a877-b1ffbe81b63e"}
 DATA
     ); // Post Fields
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -32,7 +32,33 @@ DATA
     return $output;
 }
 
-for ($i = 2277; $i <= 2280; $i++) {
-    echo json_encode(json_decode(fetch_page($i)), JSON_PRETTY_PRINT);
-    echo "\n--------------------- END OF PAGE $i ------------------------\n";
+// committee (value), TC name (name), EN Reference (projectReference), title, scope, status, pdf-url, last-update
+function store_standards()
+{
+    $file = fopen("outputs/standards.csv", "w");
+    fputcsv($file, ["Committee", "TC Name", "EN Reference", "Title", "Status", "Last Update", "pdf"], ";", escape: "");
+    $page = 0;
+    $total = 0;
+    while (true) {
+        $json = json_decode(fetch_standards($page++), true);
+        $data = $json["data"];
+        $data_count = count($data);
+        if ($data_count == 0) {
+            break;
+        }
+        $total = $json["total"];
+        foreach ($data as $project) {
+            $tc_id = $project["body"]["value"];
+            $tc_name = $project["body"]["name"];
+            $lastUpdate = $project["lastUpdatedDate"];
+            $refence = $project["projectReference"];
+            $title = $project["title"];
+            // $description = clean($project["scope"]);
+            $status = $project["currentStage"]["description"];
+            $pdf_url = $project["projectDocuments"][0]["previewUrl"];
+            fputcsv($file, [$tc_id, $tc_name, $refence, $title, $status, $lastUpdate, $pdf_url], ";", escape: "");
+        }
+        $percentage = number_format((100.0 * $page) / $total, 4);
+        echo "\r$page / $total ~ \e[1;95m$percentage%\e[0m";
+    }
 }

@@ -1,6 +1,8 @@
 <?php
 // https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search=
 
+include_once "utils.php";
+
 use Dom\HTMLDocument;
 use Dom\HTMLElement;
 use Dom\Node;
@@ -8,7 +10,6 @@ use Dom\XPath;
 
 use const Dom\HTML_NO_DEFAULT_NS;
 
-error_reporting(E_ERROR | E_PARSE);
 function fetch_page(string $url): string
 {
     $ch = curl_init();
@@ -35,45 +36,12 @@ function fetch_page(string $url): string
     return $output;
 }
 
-function clean($str)
+function add_to_csv(array $visited, $file, string $url, bool $use_keywords)
 {
-    $str = str_replace(" ", " ", $str);
-    $str = preg_replace("/\s+/", " ", $str);
-    $str = trim($str);
-    return $str;
-}
-
-$keys = [
-    "URL",
-    "ETA Number",
-    "Version",
-    "Date of issue",
-    "Trade Name",
-    "Generic type and use",
-    "Holder of assesment",
-    "Holder Address",
-    "Holder Postal Code",
-    "Holder City",
-    "Holder Country",
-    "Issuing TAB",
-    "Reference number",
-    "EU Decisioin number(OJEU)",
-    "System",
-];
-
-$total_keys = count($keys);
-
-/** @var string[] $visited */
-$visited = [];
-$keyword_pattern = "timber|wood|lumber|composite lightweight panel";
-
-function add_to_csv(string $url, bool $use_keywords)
-{
-    global $visited, $keyword_pattern, $etas_file;
-
+    echo "Adding $url.\n";
     // $dom = Dom\HTMLDocument::createFromString(fetch_page("https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search="));
-    $dom = Dom\HTMLDocument::createFromString(fetch_page($url));
-    $dom = Dom\HTMLDocument::createFromFile("output.html", HTML_NO_DEFAULT_NS);
+    $dom = Dom\HTMLDocument::createFromString(fetch_page($url), HTML_NO_DEFAULT_NS);
+    // $dom = Dom\HTMLDocument::createFromFile("output.html", HTML_NO_DEFAULT_NS);
     $xpath = new XPath($dom);
     $elements = $xpath->query('//td[@data-label="ETA Number"]/a');
 
@@ -81,6 +49,7 @@ function add_to_csv(string $url, bool $use_keywords)
     /** @var DOMNode $e */
     foreach ($elements as $e) {
         $url = "https://www.eota.eu" . $e->attributes->item(0)->nodeValue;
+        echo "ETA: $url \n";
         if (in_array($url, $visited)) {
             continue;
         }
@@ -88,6 +57,7 @@ function add_to_csv(string $url, bool $use_keywords)
         $page = fetch_page($url);
         if ($use_keywords) {
             $matches = [];
+            $keyword_pattern = "timber|wood|lumber|composite lightweight panel";
             if (preg_match($keyword_pattern, $page, $matches)) {
                 echo "We found matching: " . json_encode($matches) . "\n";
             }
@@ -105,7 +75,7 @@ function add_to_csv(string $url, bool $use_keywords)
             }, $paragraphs)
         );
 
-        fputcsv($etas_file, $values, ";");
+        fputcsv($file, $values, ";", escape: "");
         // if ($i >= 10) {
         //     break;
         // }
@@ -113,36 +83,77 @@ function add_to_csv(string $url, bool $use_keywords)
     }
 }
 
-$etas_file = fopen("etas.csv", "w");
-fputcsv($etas_file, $keys, ";");
+function store_etas()
+{
+    $keys = [
+        "URL",
+        "ETA Number",
+        "Version",
+        "Date of issue",
+        "Trade Name",
+        "Generic type and use",
+        "Holder of assesment",
+        "Holder Address",
+        "Holder Postal Code",
+        "Holder City",
+        "Holder Country",
+        "Issuing TAB",
+        "Reference number",
+        "EU Decisioin number(OJEU)",
+        "System",
+    ];
+    /** @var string[] $visited */
+    $visited = [];
 
-// // P13
-add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=13&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
+    $etas_file = fopen("outputs/etas.csv", "w");
+    fputcsv($etas_file, $keys, ";", escape: "");
 
-// // P14
-add_to_csv("https://www.eota.eu/etassessments?filter1=12&filter1_search=14&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results", false);
+    // // P13
+    add_to_csv(
+        $visited,
+        $etas_file,
+        "https://www.eota.eu/etassessments?filter1=12&filter1_search=13&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results",
+        false
+    );
 
-// // All
-add_to_csv("https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search=", true);
-fclose($etas_file);
+    // // P14
+    add_to_csv(
+        $visited,
+        $etas_file,
+        "https://www.eota.eu/etassessments?filter1=12&filter1_search=14&filter2=1&filter2_search=&filter3=1&filter3_search=#etas-results",
+        false
+    );
 
-$eads_file = fopen("eads.csv", "w");
-fputcsv($eads_file, ["url", "EAD Number", "EAD Title", "OJEU", "Status", "Comment"], ";");
-$page = fetch_page("https://www.eota.eu/eads");
-$dom = HTMLDocument::createFromString($page, HTML_NO_DEFAULT_NS);
-$xpath = new XPath($dom);
-$rows = $xpath->query("//div[@id='eads-results']//tr[position()>1]");
-foreach ($rows as $row) {
-    /** @var DOMNode $url */
-    $url = $xpath->query(".//a", $row)->item(0);
-    if (!$url) {
-        continue;
-    }
-    $url = "https://www.eota.eu" . $url->attributes->getNamedItem("href")->textContent;
-    echo $url . "\n";
-    $tds = array_map(function (Dom\Element $node) {
-        return str_replace("Download", "", clean($node->textContent));
-    }, iterator_to_array($xpath->query(".//td", $row)));
-    fputcsv($eads_file, array_merge([$url], $tds), ";", '"', "");
+    // // All
+    add_to_csv(
+        $visited,
+        $etas_file,
+        "https://www.eota.eu/etassessments?filter1=1&filter1_search=&filter2=1&filter2_search=&filter3=1&filter3_search=",
+        true
+    );
+    fclose($etas_file);
 }
-fclose($eads_file);
+
+function store_eads()
+{
+    $eads_file = fopen("outputs/eads.csv", "w");
+    fputcsv($eads_file, ["url", "EAD Number", "EAD Title", "OJEU", "Status", "Comment"], ";", escape: "");
+    $page = fetch_page("https://www.eota.eu/eads");
+    $dom = HTMLDocument::createFromString($page, HTML_NO_DEFAULT_NS);
+    $xpath = new XPath($dom);
+    $rows = $xpath->query("//div[@id='eads-results']//tr[position()>1]");
+    foreach ($rows as $row) {
+        /** @var DOMNode $url */
+        $url = $xpath->query(".//a", $row)->item(0);
+        if (!$url) {
+            continue;
+        }
+        $url = "https://www.eota.eu" . $url->attributes->getNamedItem("href")->textContent;
+        echo $url . "\n";
+        $tds = array_map(function (Dom\Element $node) {
+            return str_replace("Download", "", clean($node->textContent));
+        }, iterator_to_array($xpath->query(".//td", $row)));
+        fputcsv($eads_file, array_merge([$url], $tds), ";", escape: "");
+    }
+    fclose($eads_file);
+}
