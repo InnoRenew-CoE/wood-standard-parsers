@@ -164,10 +164,10 @@ function download_eads()
     mkdir($folder, true);
     $handle = fopen("outputs/eads.csv", "r");
     $i = 0;
-    $header = fgetcsv($handle, separator: ";");
+    $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
 
-    while (($data = fgetcsv($handle, separator: ";")) !== false) {
+    while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
         $url = $data[0];
         $name = preg_replace("/[^a-zA-Z0-9:-_]/", "", $data[1]);
         echo "[EAD $i\t] \e[0;33mDownloading\e[0m: $name";

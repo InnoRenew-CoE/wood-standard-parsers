@@ -69,10 +69,10 @@ function download_standards()
     $folder = "outputs/standards";
     mkdir($folder, true);
     $handle = fopen("outputs/standards.csv", "r");
-    $header = fgetcsv($handle, separator: ";");
+    $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
 
-    while (($data = fgetcsv($handle, separator: ";")) !== false) {
+    while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
         $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
         $status = $data[4];
         if ($status !== "Publishing") {
