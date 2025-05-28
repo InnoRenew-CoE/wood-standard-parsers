@@ -160,7 +160,8 @@ function store_eads()
 
 function download_eads()
 {
-    mkdir("outputs/eads/", true);
+    $folder = "outputs/eads";
+    mkdir($folder, true);
     $handle = fopen("outputs/eads.csv", "r");
     $i = 0;
     $header = fgetcsv($handle, separator: ";");
@@ -168,18 +169,19 @@ function download_eads()
 
     while (($data = fgetcsv($handle, separator: ";")) !== false) {
         $url = $data[0];
-        $name = $data[1];
-        echo "[EAD] \e[0;33mDownloading\e[0m: $name";
+        $name = preg_replace("/[^a-zA-Z0-9:-_]/", "", $data[1]);
+        echo "[EAD $i\t] \e[0;33mDownloading\e[0m: $name";
         // 2018/C 019/04
         $ch = curl_init($url);
-        $file_name = __DIR__ . "/outputs/eads/" . "$name.pdf";
+        $file_name = "$folder/$name.pdf";
         $fp = fopen($file_name, "wb");
         curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_exec($ch);
         curl_close($ch);
         fclose($fp);
-        echo "\r[EAD] \e[0;34mDownloaded\e[0m: $name \n";
+        echo "\r[EAD $i\t] \e[0;34mDownloaded\e[0m: $name \n";
         usleep(500_000);
+        $i++;
     }
 }

@@ -65,6 +65,7 @@ function store_standards()
 
 function download_standards()
 {
+    $i = 0;
     $folder = "outputs/standards";
     mkdir($folder, true);
     $handle = fopen("outputs/standards.csv", "r");
@@ -72,13 +73,13 @@ function download_standards()
     echo json_encode($header) . "\n";
 
     while (($data = fgetcsv($handle, separator: ";")) !== false) {
-        $name = $data[2];
+        $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
         $status = $data[4];
         if ($status !== "Publishing") {
             continue;
         }
         $url = $data[6];
-        echo "[Standard] \e[0;33mDownloading\e[0m: $name";
+        echo "[Standard $i\t\t] \e[0;33mDownloading\e[0m: $name";
         // 2018/C 019/04
         $ch = curl_init($url);
         $file_name = "$folder/$name.pdf";
@@ -88,9 +89,8 @@ function download_standards()
         curl_exec($ch);
         curl_close($ch);
         fclose($fp);
-        echo "\r[Standard] \e[0;34mDownloaded\e[0m: $name \n";
+        echo "\r[Standard $i\t\t] \e[0;34mDownloaded\e[0m: $name \n";
         usleep(500_000);
+        $i++;
     }
 }
-
-download_standards();
