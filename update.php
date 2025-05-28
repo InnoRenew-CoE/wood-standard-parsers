@@ -5,6 +5,10 @@ echo "Updates.php" . "\n";
 include_once "eota.php";
 include_once "standards.php";
 
-store_eads();
-store_etas();
-store_standards();
+$update_data_sheet = false;
+
+if ($update_data_sheet) {
+    store_eads();
+    store_etas();
+    store_standards();
+}

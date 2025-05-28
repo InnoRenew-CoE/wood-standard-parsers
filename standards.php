@@ -62,3 +62,35 @@ function store_standards()
         echo "\r$page / $total ~ \e[1;95m$percentage%\e[0m";
     }
 }
+
+function download_standards()
+{
+    $folder = "outputs/standards";
+    mkdir($folder, true);
+    $handle = fopen("outputs/standards.csv", "r");
+    $header = fgetcsv($handle, separator: ";");
+    echo json_encode($header) . "\n";
+
+    while (($data = fgetcsv($handle, separator: ";")) !== false) {
+        $name = $data[2];
+        $status = $data[4];
+        if ($status !== "Publishing") {
+            continue;
+        }
+        $url = $data[6];
+        echo "[Standard] \e[0;33mDownloading\e[0m: $name";
+        // 2018/C 019/04
+        $ch = curl_init($url);
+        $file_name = "$folder/$name.pdf";
+        $fp = fopen($file_name, "wb");
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        echo "\r[Standard] \e[0;34mDownloaded\e[0m: $name \n";
+        usleep(500_000);
+    }
+}
+
+download_standards();

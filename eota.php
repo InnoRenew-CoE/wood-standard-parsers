@@ -157,3 +157,29 @@ function store_eads()
     }
     fclose($eads_file);
 }
+
+function download_eads()
+{
+    mkdir("outputs/eads/", true);
+    $handle = fopen("outputs/eads.csv", "r");
+    $i = 0;
+    $header = fgetcsv($handle, separator: ";");
+    echo json_encode($header) . "\n";
+
+    while (($data = fgetcsv($handle, separator: ";")) !== false) {
+        $url = $data[0];
+        $name = $data[1];
+        echo "[EAD] \e[0;33mDownloading\e[0m: $name";
+        // 2018/C 019/04
+        $ch = curl_init($url);
+        $file_name = __DIR__ . "/outputs/eads/" . "$name.pdf";
+        $fp = fopen($file_name, "wb");
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        echo "\r[EAD] \e[0;34mDownloaded\e[0m: $name \n";
+        usleep(500_000);
+    }
+}
