@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^ E_WARNING);
+// error_reporting(E_ALL ^ E_WARNING);
 
 echo "Updates.php" . "\n";
 include_once "eota.php";

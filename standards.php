@@ -73,7 +73,7 @@ function download_standards()
     echo json_encode($header) . "\n";
 
     while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
-        if ($i < 11266) {
+        if ($i < 13892) {
             $i++;
             continue;
         }
