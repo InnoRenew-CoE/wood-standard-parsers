@@ -39,6 +39,6 @@ if ($update) {
 }
 
 if ($download) {
-    download_eads();
+    // download_eads();
     download_standards();
 }

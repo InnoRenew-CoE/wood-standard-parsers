@@ -65,7 +65,7 @@ function store_standards()
 
 function download_standards()
 {
-    $i = 0;
+    $i = 0; // Start from...
     $folder = "outputs/standards";
     mkdir($folder, true);
     $handle = fopen("outputs/standards.csv", "r");
@@ -73,6 +73,11 @@ function download_standards()
     echo json_encode($header) . "\n";
 
     while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
+        if ($i < 11266) {
+            $i++;
+            continue;
+        }
+
         $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
         $status = $data[4];
         if ($status !== "Publishing") {
