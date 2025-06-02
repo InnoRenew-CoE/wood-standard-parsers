@@ -73,29 +73,33 @@ function download_standards()
     echo json_encode($header) . "\n";
 
     while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
-        if ($i < 13892) {
+        if ($i < 15295) {
             $i++;
             continue;
         }
 
-        $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
-        $status = $data[4];
-        if ($status !== "Publishing") {
-            continue;
+        try {
+            $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
+            $status = $data[4];
+            if ($status !== "Publishing") {
+                continue;
+            }
+            $url = $data[6];
+            echo "[Standard $i\t\t] \e[0;33mDownloading\e[0m: $name";
+            // 2018/C 019/04
+            $ch = curl_init($url);
+            $file_name = "$folder/$name.pdf";
+            $fp = fopen($file_name, "wb");
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_exec($ch);
+            curl_close($ch);
+            fclose($fp);
+            echo "\r[Standard $i\t\t] \e[0;34mDownloaded\e[0m: $name \n";
+            usleep(500_000);
+            $i++;
+        } catch (Exception $e) {
+            var_dump($e);
         }
-        $url = $data[6];
-        echo "[Standard $i\t\t] \e[0;33mDownloading\e[0m: $name";
-        // 2018/C 019/04
-        $ch = curl_init($url);
-        $file_name = "$folder/$name.pdf";
-        $fp = fopen($file_name, "wb");
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-        echo "\r[Standard $i\t\t] \e[0;34mDownloaded\e[0m: $name \n";
-        usleep(500_000);
-        $i++;
     }
 }
