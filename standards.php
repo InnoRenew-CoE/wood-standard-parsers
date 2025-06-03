@@ -102,4 +102,5 @@ function download_standards()
             var_dump($e);
         }
     }
+    echo "Ended for some reason! \n";
 }
