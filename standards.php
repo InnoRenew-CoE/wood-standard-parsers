@@ -86,7 +86,7 @@ function download_standards()
                 continue;
             }
             $retry = 0;
-            if ($i < 16059) {
+            if ($i < 16671) {
                 $i++;
                 continue;
             }
