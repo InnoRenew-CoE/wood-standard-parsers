@@ -73,6 +73,7 @@ function download_standards()
     echo json_encode($header) . "\n";
 
     try {
+        setlocale(LC_ALL, "de_DE.UTF-8");
         while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
             if ($i < 16059) {
                 $i++;
