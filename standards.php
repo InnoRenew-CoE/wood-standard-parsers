@@ -72,13 +72,13 @@ function download_standards()
     $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
 
-    while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
-        if ($i < 15295) {
-            $i++;
-            continue;
-        }
+    try {
+        while (($data = fgetcsv($handle, separator: ";", escape: "\\")) !== false) {
+            if ($i < 16059) {
+                $i++;
+                continue;
+            }
 
-        try {
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
             $status = $data[4];
             if ($status !== "Publishing") {
@@ -98,9 +98,10 @@ function download_standards()
             echo "\r[Standard $i\t\t] \e[0;34mDownloaded\e[0m: $name \n";
             usleep(500_000);
             $i++;
-        } catch (Exception $e) {
-            var_dump($e);
         }
+    } catch (Exception $e) {
+        var_dump($e);
+        echo "An exception occured...\n";
     }
     echo "Ended for some reason! \n";
 }
