@@ -75,13 +75,14 @@ function download_standards()
     try {
         setlocale(LC_ALL, "de_DE.UTF-8");
         $retry = 0;
-        while ($data = fgetcsv($handle, separator: ";", escape: "\\")) {
+        while (true) {
+            $data = fgetcsv($handle, separator: ";", escape: "\\");
             if ($retry >= 5) {
                 die("Ending because retry took so fucking many times...?");
             }
             if ($data === false) {
                 $retry++;
-                echo json_encode($data);
+                echo "Retrying: " . json_encode($data) . "\n";
                 continue;
             }
             $retry = 0;
