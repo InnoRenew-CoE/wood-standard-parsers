@@ -98,7 +98,7 @@ function download_standards()
         $i = 0;
         /** @var string[] $data */
         foreach ($lines as $data) {
-            if ($i < 18068) {
+            if ($i < 18360) {
                 $i++;
                 continue;
             }
