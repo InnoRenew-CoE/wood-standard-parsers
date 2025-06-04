@@ -99,7 +99,7 @@ function download_standards()
         /** @var string[] $data */
         foreach ($lines as $data) {
             $i++;
-            if ($i < 18433) {
+            if ($i < 27892) {
                 continue;
             }
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
