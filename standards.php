@@ -68,7 +68,7 @@ function download_standards()
     $i = 0; // Start from...
     $folder = "outputs/standards";
     mkdir($folder, true);
-    $handle = fopen("outputs/standards.csv", "r");
+    $handle = fopen("outputs/standards.csv", "a");
     $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
     /** @var string[][] $lines */
@@ -78,7 +78,7 @@ function download_standards()
         setlocale(LC_ALL, "de_DE.UTF-8");
         $retry = 0;
         while (true) {
-            $data = fgetcsv($handle, 10000, separator: ";", escape: "");
+            $data = fgetcsv($handle, separator: ";", escape: "");
             if ($data === false) {
                 $retry++;
                 echo "Retrying line $i: " . json_encode($data) . "\n";
