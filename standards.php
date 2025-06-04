@@ -115,6 +115,7 @@ function download_standards()
             $fp = fopen($file_name, "wb");
             curl_setopt($ch, CURLOPT_FILE, $fp);
             curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 100);
             curl_exec($ch);
             curl_close($ch);
             fclose($fp);
