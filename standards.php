@@ -84,7 +84,7 @@ function download_standards()
             }
             if ($data === false) {
                 $retry++;
-                echo "Retrying: " . json_encode($data) . "\n";
+                echo "Retrying line $i: " . json_encode($data) . "\n";
                 continue;
             }
             $retry = 0;
@@ -93,10 +93,12 @@ function download_standards()
                 continue;
             }
             $lines[] = $data;
+            $i++;
         }
         fclose($handle);
         echo "We have " . count($lines) . " lines to parse\n";
 
+        $i = 0;
         /** @var string[] $data */
         foreach ($lines as $data) {
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
