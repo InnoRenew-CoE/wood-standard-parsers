@@ -78,7 +78,7 @@ function download_standards()
         setlocale(LC_ALL, "de_DE.UTF-8");
         $retry = 0;
         while (true) {
-            $data = fgetcsv($handle, separator: ";", escape: "");
+            $data = fgetcsv($handle, separator: ";", escape: "\\");
             if ($retry >= 5) {
                 die("Ending because retry took so fucking many times...?");
             }
@@ -94,6 +94,7 @@ function download_standards()
             }
             $lines[] = $data;
         }
+        fclose($handle);
         echo "We have " . count($lines) . " lines to parse\n";
 
         /** @var string[] $data */
