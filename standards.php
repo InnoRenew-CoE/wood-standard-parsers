@@ -79,7 +79,8 @@ function download_standards()
         $retry = 0;
         while (true) {
             if ($retry >= 5) {
-                die("Unable to read line $i");
+                echo "Unable to read line $i\n";
+                break;
             }
             $data = fgetcsv($handle, separator: ";", escape: "");
             if ($data === false) {
