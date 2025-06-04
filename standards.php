@@ -78,6 +78,9 @@ function download_standards()
         setlocale(LC_ALL, "de_DE.UTF-8");
         $retry = 0;
         while (true) {
+            if ($retry >= 5) {
+                die("Unable to read line $i");
+            }
             $data = fgetcsv($handle, separator: ";", escape: "");
             if ($data === false) {
                 $retry++;
