@@ -79,9 +79,6 @@ function download_standards()
         $retry = 0;
         while (true) {
             $data = fgetcsv($handle, 10000, separator: ";", escape: "\\");
-            if ($retry >= 5) {
-                die("Ending because retry took so fucking many times...?");
-            }
             if ($data === false) {
                 $retry++;
                 echo "Retrying line $i: " . json_encode($data) . "\n";
