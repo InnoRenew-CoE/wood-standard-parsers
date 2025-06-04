@@ -98,8 +98,8 @@ function download_standards()
         $i = 0;
         /** @var string[] $data */
         foreach ($lines as $data) {
-            if ($i < 18360) {
-                $i++;
+            $i++;
+            if ($i < 18433) {
                 continue;
             }
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
@@ -121,7 +121,6 @@ function download_standards()
             fclose($fp);
             echo "\r[Standard $i\t\t] \e[0;34mDownloaded\e[0m: $name \n";
             usleep(500_000);
-            $i++;
         }
     } catch (Exception $e) {
         var_dump($e);
