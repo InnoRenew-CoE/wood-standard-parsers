@@ -68,7 +68,7 @@ function download_standards()
     $i = 0; // Start from...
     $folder = "outputs/standards";
     mkdir($folder, true);
-    $handle = fopen("outputs/standards.csv", "a");
+    $handle = fopen("outputs/standards.csv", "r+");
     $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
     /** @var string[][] $lines */
