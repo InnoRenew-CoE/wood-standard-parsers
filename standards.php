@@ -126,5 +126,5 @@ function download_standards()
         var_dump($e);
         echo "An exception occured...\n";
     }
-    echo "Ended for some reason! \n";
+    echo "Parsed in total $i files! \n";
 }
