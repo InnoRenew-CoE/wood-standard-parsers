@@ -89,10 +89,6 @@ function download_standards()
                 continue;
             }
             $retry = 0;
-            if ($i < 18068) {
-                $i++;
-                continue;
-            }
             $lines[] = $data;
             $i++;
         }
@@ -102,6 +98,10 @@ function download_standards()
         $i = 0;
         /** @var string[] $data */
         foreach ($lines as $data) {
+            if ($i < 18068) {
+                $i++;
+                continue;
+            }
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
             $status = $data[4];
             if ($status !== "Publishing") {
