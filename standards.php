@@ -78,7 +78,7 @@ function download_standards()
         setlocale(LC_ALL, "de_DE.UTF-8");
         $retry = 0;
         while (true) {
-            $data = fgetcsv($handle, 10000, separator: ";", escape: "\\");
+            $data = fgetcsv($handle, 10000, separator: ";", escape: "");
             if ($data === false) {
                 $retry++;
                 echo "Retrying line $i: " . json_encode($data) . "\n";
