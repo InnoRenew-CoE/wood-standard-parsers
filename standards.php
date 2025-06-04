@@ -71,6 +71,8 @@ function download_standards()
     $handle = fopen("outputs/standards.csv", "r");
     $header = fgetcsv($handle, separator: ";", escape: "\\");
     echo json_encode($header) . "\n";
+    /** @var string[][] $lines */
+    $lines = [];
 
     try {
         setlocale(LC_ALL, "de_DE.UTF-8");
@@ -86,11 +88,16 @@ function download_standards()
                 continue;
             }
             $retry = 0;
-            if ($i < 17670) {
+            if ($i < 18068) {
                 $i++;
                 continue;
             }
+            $lines[] = $data;
+        }
+        echo "We have " . count($lines) . " lines to parse\n";
 
+        /** @var string[] $data */
+        foreach ($lines as $data) {
             $name = preg_replace("/[^a-zA-Z0-9:-_\s]/", "", $data[2]);
             $status = $data[4];
             if ($status !== "Publishing") {
